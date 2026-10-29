@@ -11081,7 +11081,7 @@ class NmrDpUtility:
                     continue
 
                 self.__reg.pA.clear()
-                self.__reg.pA.setReferenceSequence(ps1['auth_comp_id'] if 'auth_comp_id' in ps1 else ps2['comp_id'],
+                self.__reg.pA.setReferenceSequence(ps1['auth_comp_id'] if 'auth_comp_id' in ps1 else ps1['comp_id'],
                                                    f'REF{chain_id}')
                 self.__reg.pA.addTestSequence(ps2['comp_id'], chain_id)
                 self.__reg.pA.doAlign()

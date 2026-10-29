@@ -601,7 +601,8 @@ class NmrDpRemediationLegacyMr(NmrDpRemediationBase):
 
             fileListId += 1
 
-            if file_type in ('nm-aux-amb', 'nm-aux-cha', 'nm-aux-gro', 'nm-aux-pdb', 'nm-res-oth', 'nm-res-mr', 'nm-res-sax')\
+            if file_type is None\
+               or file_type in ('nm-aux-amb', 'nm-aux-cha', 'nm-aux-gro', 'nm-aux-pdb', 'nm-res-oth', 'nm-res-mr', 'nm-res-sax')\
                or file_type.startswith('nm-pea'):
                 continue
 
@@ -1012,7 +1013,8 @@ class NmrDpRemediationLegacyMr(NmrDpRemediationBase):
 
             ignore_error = False if 'ignore_error' not in input_source_dic else input_source_dic['ignore_error']
 
-            if file_type in ('nm-aux-amb', 'nm-aux-cha', 'nm-aux-gro', 'nm-aux-pdb', 'nm-res-oth', 'nm-res-mr', 'nm-res-sax')\
+            if file_type is None\
+               or file_type in ('nm-aux-amb', 'nm-aux-cha', 'nm-aux-gro', 'nm-aux-pdb', 'nm-res-oth', 'nm-res-mr', 'nm-res-sax')\
                or file_type.startswith('nm-pea'):
                 continue
 

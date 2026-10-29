@@ -736,7 +736,7 @@ class NmrDpRemediationLegacyPk(NmrDpRemediationBase):
 
             fileListId += 1
 
-            if file_type.startswith('nm-res') or file_type.startswith('nm-aux'):
+            if file_type is None or file_type.startswith('nm-res') or file_type.startswith('nm-aux'):
                 continue
 
             if self._reg.remediation_mode and os.path.exists(self.testPathWithSuffix(file_path, '-ignored', True)):

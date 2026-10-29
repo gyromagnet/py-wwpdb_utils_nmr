@@ -4,6 +4,7 @@
 ##
 """Regressions for independent peak readers and coordinates without experiment metadata."""
 import io
+import json
 import sys
 import unittest
 from collections import defaultdict
@@ -32,6 +33,37 @@ from wwpdb.utils.nmr.pk.XeasyPKReader import XeasyPKReader
 
 
 class PeakReaderRegressionTests(unittest.TestCase):
+
+    def test_empty_required_shift_list_is_rejected_before_workflow(self):
+        utility = NmrDpUtility()
+        utility.addInput(name='chem_shift_file_path_list', value=[], type='file_dict_list')
+        with self.assertRaisesRegex(ValueError, 'No input provided'):
+            utility.op('nmr-cs-mr-merge')
+
+    def test_unidentified_restraint_format_returns_diagnostics_without_crashing(self):
+        coordinates = Path(__file__).resolve().parents[1] / 'tests-nmr/mock-data/2l9r.cif'
+        with TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            source = root / 'unknown.txt'
+            source.write_text('not a recognized restraint format\n', encoding='utf-8')
+            utility = NmrDpUtility()
+            utility.setWorkspace(str(root / 'work'), str(root / 'cache'))
+            utility.addInput(name='chem_shift_file_path_list',
+                             value=[{'file_name': str(coordinates.with_suffix('.str')), 'file_type': 'nm-shi'}],
+                             type='file_dict_list')
+            utility.addInput(name='atypical_restraint_file_path_list',
+                             value=[{'file_name': str(source), 'file_type': 'nm-res-bio'}], type='file_dict_list')
+            utility.addInput(name='coordinate_file_path', value=str(coordinates), type='file')
+            utility.addInput(name='remediation', value=True, type='param')
+            utility.addInput(name='conversion_server', value=True, type='param')
+            utility.setLog(str(root / 'report.json'))
+            utility.setDestination(str(root / 'merged.str'))
+            self.assertFalse(utility.op('nmr-cs-mr-merge'))
+            self.assertTrue((root / 'report.json').is_file())
+            report = json.loads((root / 'report.json').read_text(encoding='utf-8'))
+            self.assertEqual(report['information']['input_sources'][1]['file_type'], 'nm-res-bio')
+            self.assertTrue(report['error'])
+            self.assertNotIn('internal_error', report['error'])
 
     def test_xeasy_creates_default_translator(self):
         reader = XeasyPKReader(verbose=False, log=io.StringIO())

@@ -1179,7 +1179,7 @@ class NmrDpUtility:
                     self.__reg.cs_file_path_list_len = 0
                     self.__reg.file_path_list_len = 1
 
-            if CS_FILE_PATH_LIST_KEY not in self.__reg.inputParamDict:
+            if not self.__reg.inputParamDict.get(CS_FILE_PATH_LIST_KEY):
                 if not self.__reg.permit_missing_cs_file:
                     raise ValueError(f"+{self.__class_name__}.op() ++ Error  - No input provided for workflow operation {op}.")
 

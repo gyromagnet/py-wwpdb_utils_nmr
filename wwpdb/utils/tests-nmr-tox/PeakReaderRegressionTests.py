@@ -25,6 +25,7 @@ import pynmrstar
 # PairwiseAlign is exported by the compiled alignment extension, invisible to static inference.
 from wwpdb.utils.align.alignlib import PairwiseAlign  # pylint: disable=no-name-in-module
 from wwpdb.utils.nmr.NmrDpUtility import NmrDpUtility
+from wwpdb.utils.nmr.ann.BmrbAnnTasks import annotate_assembly_experimental_data
 from wwpdb.utils.nmr.nef.NefTranslator import NefTranslator
 from wwpdb.utils.nmr.pk.BasePKParserListener import BasePKParserListener
 from wwpdb.utils.nmr.pk.XeasyPKReader import XeasyPKReader
@@ -121,3 +122,15 @@ class PeakReaderRegressionTests(unittest.TestCase):
                         # pylint: disable-next=protected-access
                         self.assertEqual(utility._NmrDpUtility__reg.inputParamDict['report_file_path'],
                                          override if explicit else current)
+
+    def test_assembly_annotation_handles_missing_column_without_inventing_no(self):
+        loop = pynmrstar.Loop.from_scratch('_Entity_assembly')
+        loop.add_tag('ID')
+        loop.add_data(['1'])
+        loop.add_data(['2'])
+        annotate_assembly_experimental_data(loop, {1})
+        self.assertEqual(loop.get_tag('Experimental_data_reported'), ['yes', None])
+        # Existing author assertions are retained even without matching extracted data.
+        loop.data[1][1] = 'yes'
+        annotate_assembly_experimental_data(loop, set())
+        self.assertEqual(loop.get_tag('Experimental_data_reported'), ['yes', 'yes'])

@@ -89,6 +89,26 @@ DEFAULT_SF_LABEL_TAGS = ('_Assigned_chem_shift_list.Sample_condition_list_label'
                          '_Conformer_family_coord_set.Sample_condition_list_label')
 
 
+def annotate_assembly_experimental_data(loop: pynmrstar.Loop, reported: set[int]) -> None:
+    """Mark assemblies with known experimental data; leave other states unknown.
+
+    Extracted input tables may omit the annotation column. A missing column must
+    not crash conversion or be interpreted as a set of negative observations.
+    """
+    if 'ID' not in loop.tags:
+        return
+    if 'Experimental_data_reported' not in loop.tags:
+        loop.add_tag('Experimental_data_reported')
+        for row in loop.data:
+            row.append(None)
+    id_column = loop.tags.index('ID')
+    data_column = loop.tags.index('Experimental_data_reported')
+    for row in loop.data:
+        identifier = row[id_column]
+        if isinstance(identifier, str) and identifier.isdigit() and int(identifier) in reported:
+            row[data_column] = 'yes'
+
+
 class BmrbAnnTasks:
     """ Wrapper class for BMRB annotation tasks.
     """
@@ -4056,14 +4076,7 @@ class BmrbAnnTasks:
                             if sample_type in ('protein', 'peptide'):
                                 total_cys_in_assembly += entity['total_cys']
 
-                exptl_data_col = lp.tags.index('Experimental_data_reported')
-
-                dat = lp.get_tag(['ID', 'Experimental_data_reported'])
-
-                for idx, row in enumerate(dat):
-                    if isinstance(row[0], str) and row[0] not in EMPTY_VALUE and row[0].isdigit() and row[1] != 'yes':
-                        if int(row[0]) in ent_asym_id_with_exptl_data:
-                            lp.data[idx][exptl_data_col] = 'yes'
+                annotate_assembly_experimental_data(lp, ent_asym_id_with_exptl_data)
 
             except KeyError:
                 pass

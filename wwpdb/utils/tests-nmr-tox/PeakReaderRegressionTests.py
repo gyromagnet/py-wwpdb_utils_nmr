@@ -7,6 +7,8 @@ import io
 import sys
 import unittest
 from collections import defaultdict
+from pathlib import Path
+from tempfile import TemporaryDirectory
 from unittest.mock import MagicMock, Mock, patch
 
 # Configure the test CCD before importing any scientific modules.
@@ -99,3 +101,23 @@ class PeakReaderRegressionTests(unittest.TestCase):
         records = reports['model_poly_seq_vs_nmr_poly_seq']
         self.assertEqual({(row['ref_chain_id'], row['test_chain_id']) for row in records}, {('A', '1'), ('B', '2')})
         self.assertTrue(all(row['sequence_coverage'] == 1.0 for row in records))
+
+    def test_translation_keeps_setlog_path_for_the_next_phase(self):
+        with TemporaryDirectory() as temporary:
+            for method, output_key, suffix in (
+                    ('_NmrDpUtility__initResourceForNef2Str', 'nmr-star_file_path', 'str'),
+                    ('_NmrDpUtility__initResourceForStr2Nef', 'nef_file_path', 'nef')):
+                for explicit in (False, True):
+                    with self.subTest(method=method, explicit=explicit):
+                        utility = NmrDpUtility(verbose=False, log=io.StringIO())
+                        current = str(Path(temporary) / 'current.json')
+                        override = str(Path(temporary) / 'override.json')
+                        utility.setLog(current)
+                        utility.addOutput(name=output_key, value=str(Path(temporary) / f'next.{suffix}'), type='file')
+                        if explicit:
+                            utility.addOutput(name='report_file_path', value=override, type='file')
+                        self.assertTrue(getattr(utility, method)())
+                        # Inspect the active workflow descriptor; no public getter exposes it.
+                        # pylint: disable-next=protected-access
+                        self.assertEqual(utility._NmrDpUtility__reg.inputParamDict['report_file_path'],
+                                         override if explicit else current)

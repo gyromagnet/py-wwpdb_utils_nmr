@@ -16413,7 +16413,9 @@ class NmrDpUtility:
 
             self.__reg.srcPath = self.__reg.outputParamDict[NEXT_STAR_FILE_PATH_KEY]
             self.__reg.dstPath = self.__reg.srcPath
-            self.__logPath = self.__reg.outputParamDict.get(REPORT_FILE_PATH_KEY)
+            # setLog() is the public report-output API. Keep it unless an explicit
+            # output report path overrides it, so the next phase reloads its own report.
+            self.__logPath = self.__reg.outputParamDict.get(REPORT_FILE_PATH_KEY, self.__logPath)
             if self.__logPath is not None:
                 self.addInput(REPORT_FILE_PATH_KEY, self.__logPath, type='file')
             self.__reg.op = 'nmr-str-consistency-check'
@@ -16521,7 +16523,9 @@ class NmrDpUtility:
 
             self.__reg.srcPath = self.__reg.outputParamDict[NEXT_NEF_FILE_PATH_KEY]
             self.__reg.dstPath = self.__reg.srcPath
-            self.__logPath = self.__reg.outputParamDict.get(REPORT_FILE_PATH_KEY)
+            # setLog() is the public report-output API. Keep it unless an explicit
+            # output report path overrides it, so the next phase reloads its own report.
+            self.__logPath = self.__reg.outputParamDict.get(REPORT_FILE_PATH_KEY, self.__logPath)
             if self.__logPath is not None:
                 self.addInput(REPORT_FILE_PATH_KEY, self.__logPath, type='file')
             self.__reg.op = 'nmr-nef-consistency-check'

@@ -515,13 +515,12 @@ for op, dst, nmr_cif in (('nmr-str2str-deposit', '2l9r_str2str.str', None),
 
         self.utility.op("nmr-str2str-deposit")
 
-    @unittest.skip("Until test corrected")
     def test_nmr_str2str_deposit_cleaned(self):
         self.utility.setSource(os.path.join(self.data_dir_path, "24642_2mqq-clean.str"))
         self.utility.addInput(name="coordinate_file_path", value=os.path.join(self.data_dir_path, "2mqq.cif"), type="file")
         self.utility.setLog(os.path.join(TESTOUTPUT, "24642_2mqq-str2str-consistency-log.json"))
 
-        self.utility.op("nmr-str-consistency-check")
+        self.assertFalse(self.utility.op("nmr-str-consistency-check"))
 
         self.utility.setSource(os.path.join(self.data_dir_path, "24642_2mqq-clean.str"))
         self.utility.addInput(name="coordinate_file_path", value=os.path.join(self.data_dir_path, "2mqq.cif"), type="file")
@@ -534,7 +533,16 @@ for op, dst, nmr_cif in (('nmr-str2str-deposit', '2l9r_str2str.str', None),
         self.utility.addOutput(name="insert_entry_id_to_loops", value=True, type="param")
         self.utility.setVerbose(False)
 
-        self.utility.op("nmr-str2str-deposit")
+        self.assertFalse(self.utility.op("nmr-str2str-deposit"))
+        # This historical "clean" input still contains anomalous assignments.
+        # Exercise the conversion and require their diagnostics instead of skipping it
+        # or confusing a generated file with a scientifically valid deposition.
+        with open(os.path.join(TESTOUTPUT, "24642-str2str-deposit-log.json"), encoding="utf-8") as handle:
+            report = json.load(handle)
+        self.assertEqual(report['information']['status'], 'Error')
+        self.assertGreater(len(report['error']['anomalous_data']), 0)
+        self.assertFalse(report['error'].get('internal_error'))
+        self.assertGreater(os.path.getsize(os.path.join(TESTOUTPUT, "24642_2mqq-clean-next.str")), 0)
 
     @unittest.skipIf(skipsome is True, "Skip some tests")
     def test_nmr_str2str_deposit_chem_shift_ref(self):

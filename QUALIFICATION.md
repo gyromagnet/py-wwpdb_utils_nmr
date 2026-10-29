@@ -20,11 +20,11 @@ all shipped Python files with the source checkout. Obsolete modules are excluded
 as declared in `.dockerignore`. Rebuild after source changes. Tests are mounted
 from this checkout and use the installed image modules and accelerators.
 
-On 2026-10-29, the v7 full suite ran **126 tests with no failures or skips**, using
-Python 3.14.10 on Linux amd64 through Docker. This includes the formerly skipped
-cleaned-input case, now asserting its real anomaly/rejection diagnostics.
-The current suite includes two additional input-boundary regressions (128 total);
-its full acceptance run is pending. `just fix` runs flake8, the eight peak/workflow regressions, the unknown-content
+On 2026-10-29, the full v8 suite ran **128 tests with no failures or skips**,
+using Python 3.14.10 on Linux amd64 through Docker (717.590 seconds). This
+includes the formerly skipped cleaned-input case, now asserting its real
+anomaly/rejection diagnostics, and the new input-boundary regressions.
+`just fix` passes flake8, eight peak/workflow regressions, the unknown-content
 schema regression and focused Pylint checks on the new regression modules.
 The second upstream discovery root (`just test-library`) contains no tests.
 

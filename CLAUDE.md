@@ -49,8 +49,7 @@ python -m unittest discover -v -s wwpdb/utils/tests-nmr-tox -p "NmrDpUtilityTest
 
 ### Known failures
 
-The most recent complete v7 qualification passed 126 tests with no skips; the
-current 128-test acceptance run is pending.
+The complete local v8 qualification passed 128 tests with no failures or skips.
 The formerly skipped `test_nmr_str2str_deposit_cleaned` is an active diagnostic
 regression: its historical input contains anomalous shifts and is expected to
 retain an Error result. Whole-repository Pylint has additional diagnostics under

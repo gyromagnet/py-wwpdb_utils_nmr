@@ -15819,6 +15819,17 @@ class NmrDpUtility:
 
                                 list_ids.append(val)
 
+                            if not list_ids:
+                                # No parent identity can be inferred from an empty/all-missing column.
+                                # Report the source defect instead of indexing an empty Counter.
+                                self.__reg.report.error.appendDescription('missing_data',
+                                                                          {'file_name': file_name,
+                                                                           'sf_framecode': sf_framecode,
+                                                                           'category': lp_category,
+                                                                           'description': f"No defined {itName} values; "
+                                                                                          "cannot infer saveframe ID."})
+                                return False
+
                             list_id = collections.Counter(list_ids).most_common()[0][0]
 
                             tagNames = [t[0] for t in sf.tags]

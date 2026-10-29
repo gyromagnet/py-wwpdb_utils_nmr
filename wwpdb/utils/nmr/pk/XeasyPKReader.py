@@ -114,7 +114,7 @@ class XeasyPKReader:
         self.__csStat = BmrbChemShiftStat(verbose, log, self.__ccU) if csStat is None else csStat
 
         # NefTranslator
-        self.__nefT = (verbose, log, self.__ccU, self.__csStat) if nefT is None else nefT
+        self.__nefT = NefTranslator(verbose, log, self.__ccU, self.__csStat) if nefT is None else nefT
         if nefT is None:
             self.__nefT.set_remediation_mode(True)
 

@@ -1059,6 +1059,7 @@ class BasePKParserListener():
                  nefT: NefTranslator = None,
                  reasons: Optional[dict] = None) -> None:
 
+        self.exptlMethod = '.'
         self.representativeModelId = representativeModelId
         self.representativeAltId = representativeAltId
         # atom name mapping of public MR file between the archive coordinates and submitted ones

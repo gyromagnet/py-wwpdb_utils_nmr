@@ -98,8 +98,8 @@
           ]
         },
         "content_subtype": {
-          "description": "Dictionary of content subtype that accommodates total number of relevant saveframes.",
-          "type": "object",
+          "description": "Dictionary of content subtype that accommodates total number of relevant saveframes. Null means that no content subtype could be identified; input diagnostics explain any rejection.",
+          "type": ["object", "null"],
           "properties": {
             "coordinate": {
               "description": "The number of saveframes associated with atomic coordinates.",

@@ -33,16 +33,11 @@ FULLTEST=1 python -m unittest discover -v -s wwpdb/utils/tests-nmr-tox -p "*Test
 python -m unittest discover -v -s wwpdb/utils/tests-nmr-tox -p "NmrDpUtilityTests.py" -k <test_name>
 ```
 
-- **`FULLTEST=1` matters.** The suite has 119 tests. Without `FULLTEST`, 20 of
-  the 29 `NmrDpUtilityTests` and 1 of the 28 `NefTranslatorTests` are skipped,
-  and so is the one test that is always skipped. That leaves 8
-  `NmrDpUtilityTests` running. Use it for anything non-trivial. The tox py39
-  environment also skips the 3 `c_listener_util` tests in
-  `ParserListenerUtilTests`, because it does not build that accelerator: tox
-  reports 25 skipped, and a local run with the accelerator built reports 22.
-  Timings measured Oct 2026 on a heavily loaded 2-core machine: the default run
-  takes ~2 min; with `FULLTEST`, `NmrDpUtilityTests` alone takes ~5 min and the
-  whole suite ~5-6 min.
+- **`FULLTEST=1` matters.** The suite now has 128 tests. Heavy workflow tests
+  are skipped without it. The local qualification harness sets it automatically
+  and runs all tests without the FULLTEST-dependent skips. Tox may additionally skip the three optional
+  `c_listener_util` tests when that accelerator is not built. See
+  `QUALIFICATION.md` for the exact tested interpreter and image scope.
 - `format_black` is in `tox.ini`'s envlist but **not** wired into CI, and the
   codebase is not black-formatted. Do not run black.
 - Two test directories: `tests-nmr-tox/` (`*Tests.py`) is what CI runs;
@@ -54,9 +49,13 @@ python -m unittest discover -v -s wwpdb/utils/tests-nmr-tox -p "NmrDpUtilityTest
 
 ### Known failures
 
-There are none. A green `FULLTEST=1` run is **119 ran, OK, 1 skipped**
-(`test_nmr_str2str_deposit_cleaned`, 'Until test corrected'). For the skip
-counts without `FULLTEST`, see above.
+The most recent complete v7 qualification passed 126 tests with no skips; the
+current 128-test acceptance run is pending.
+The formerly skipped `test_nmr_str2str_deposit_cleaned` is an active diagnostic
+regression: its historical input contains anomalous shifts and is expected to
+retain an Error result. Whole-repository Pylint has additional diagnostics under
+the pinned modern tool version; focused checks on new regressions pass. See
+`QUALIFICATION.md` for validation limits.
 
 `test_get_nef_atom` used to fail. The cause was test import order:
 `commonsetup` mocks `wwpdb.utils.config.ConfigInfo` with the test CCD
@@ -67,8 +66,7 @@ before `commonsetup` therefore bound the real CCD path, and `HEM` became
 now imports `commonsetup` first. Keep it that way in new test modules,
 or results start depending on which module unittest happens to load first.
 
-Anything else failing is new. flake8 and pylint are both clean at CI's
-invocations.
+Flake8 and the focused regression checks pass at the local harness invocations.
 
 ## Architecture
 

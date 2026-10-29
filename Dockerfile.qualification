@@ -1,0 +1,8 @@
+# Freeze existing converter science resources; never run resource updaters here.
+ARG BASE_IMAGE=bmrb-extract/utils-nmr@sha256:ae30314a2cdb7e1cb59843d362a2ba42d0b5fd413019ddefaa13c4b9135f9be2
+FROM ${BASE_IMAGE}
+USER root
+COPY qualification-requirements.txt /tmp/qualification-requirements.txt
+RUN python -m pip install --no-cache-dir -r /tmp/qualification-requirements.txt
+COPY --chown=appuser:appuser wwpdb/utils/nmr /opt/py-wwpdb_utils_nmr/wwpdb/utils/nmr
+USER appuser

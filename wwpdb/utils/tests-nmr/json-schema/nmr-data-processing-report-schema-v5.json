@@ -4645,7 +4645,7 @@
         },
         "entry_title": {
           "description": "Entry title.",
-          "type": "string",
+          "type": ["string", "null"],
           "minLength": 1
         },
         "entry_authors": {
@@ -4760,11 +4760,11 @@
           "properties": {
             "name": {
               "description": "Summary of the molecular system.",
-              "type": "string"
+              "type": ["string", "null"]
             },
             "number_of_components": {
               "description": "Total number of molecular components.",
-              "type": "integer",
+              "type": ["integer", "null"],
               "minimum": 1
             },
             "organic_ligands": {
@@ -4832,7 +4832,7 @@
         },
         "chem_shift_summary": {
           "description": "Section for completeness of overall assigned chemical shifts.",
-          "type": "object",
+          "type": ["object", "null"],
           "properties": {
             "number_of_target_shifts_in_well_defined_region": {
               "type": "integer",
@@ -4929,7 +4929,7 @@
         },
         "restraint_summary": {
           "description": "Section for summary of overall NMR restraints.",
-          "type": "object",
+          "type": ["object", "null"],
           "properties": {
             "total_distance_restraints": {
               "type": "integer",

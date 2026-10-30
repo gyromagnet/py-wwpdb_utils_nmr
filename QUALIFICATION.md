@@ -57,3 +57,21 @@ hash-bound packet inputs, actual outputs, native reports, stage events, source
 checks and documented unknowns. Its common synthetic geometry remains an atom
 inventory; unsupported producer dialects and topology mappings remain explicit
 qualification gaps. See the evaluation `docs/FIXTURE_QUALIFICATION.md`.
+
+
+## Final-output diagnostic schema checkpoint
+
+Analyzing the final conversion phase exposed report-schema incompatibilities
+that the initial phase did not exercise. Output statistics can legitimately
+retain unknown entry titles and assembly names/component counts, or unavailable
+chemical-shift/restraint summaries as null. The v5 schema now represents those
+specific unknown informational values explicitly. Present title strings and
+positive component counts retain their constraints; wrong types and invalid
+counts remain rejected. This does not waive required scientific input checks.
+The bundled backend schema is synchronized.
+
+`just fix` passes flake8, eight existing peak/workflow regressions, both schema
+regressions and focused Pylint. Executable converter source and the pinned v8
+image are unchanged, so the previous 128-test full executable-suite result is
+historical evidence for that image; the two current schema regressions are the
+focused validation of this checkpoint, not a newly claimed full suite run.

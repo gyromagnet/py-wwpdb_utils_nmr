@@ -39,4 +39,4 @@ lint-regressions:
     docker run --rm --pull=never --platform linux/amd64 -e PYTHONPATH=/workspace:/opt/py-packages:/opt/py-wwpdb_utils_nmr -v "$(pwd):/workspace:ro" -w /workspace bmrb-extract/utils-nmr:qualification-20261029-v8 pylint --disable=R,C --reports=n --rcfile=pylintrc wwpdb/utils/tests-nmr-tox/PeakReaderRegressionTests.py wwpdb/utils/tests-nmr-tox/ReportSchemaRegressionTests.py
 
 schema-regressions:
-    just test -k test_unidentified_content
+    just test -k ReportSchemaRegressionTests

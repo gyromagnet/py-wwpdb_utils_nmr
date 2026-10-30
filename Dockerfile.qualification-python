@@ -1,0 +1,11 @@
+# Python-only successor to the already admitted v9 native build. The recipe
+# verifies this local tag's exact image ID before allowing the build.
+FROM bmrb-extract/utils-nmr:qualification-20261030-v9
+USER root
+COPY wwpdb/utils/nmr /tmp/current-nmr
+# Fail rather than reuse accelerators if their native sources changed.
+RUN python -c "from pathlib import Path; import hashlib; suffixes = {'.cpp', '.h', '.hpp', '.c'}; digest = lambda root: {str(p.relative_to(root)): hashlib.sha256(p.read_bytes()).hexdigest() for p in root.rglob('*') if p.is_file() and p.suffix in suffixes}; assert digest(Path('/tmp/current-nmr')) == digest(Path('/opt/py-wwpdb_utils_nmr/wwpdb/utils/nmr')), 'Native sources changed: use the full accelerator build'" \
+    && cp -a /tmp/current-nmr/. /opt/py-wwpdb_utils_nmr/wwpdb/utils/nmr/ \
+    && chown -R appuser:appuser /opt/py-wwpdb_utils_nmr/wwpdb/utils/nmr \
+    && rm -rf /tmp/current-nmr
+USER appuser

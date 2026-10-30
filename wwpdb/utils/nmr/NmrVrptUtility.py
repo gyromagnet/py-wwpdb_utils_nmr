@@ -2514,7 +2514,11 @@ class NmrVrptUtility:
                 for row in self.__rR.getDictList(lp_category, datablock_name):
                     auth_chain_id = row['Entity_assembly_ID']
                     seq_id = row['Comp_index_ID']
-                    auth_seq_id = row['Seq_ID']
+                    # NEF sequence translation provides canonical Comp_index_ID
+                    # even when the redundant Seq_ID column is absent.
+                    auth_seq_id = row.get('Seq_ID', seq_id)
+                    if auth_seq_id in EMPTY_VALUE:
+                        auth_seq_id = seq_id
                     comp_id = row['Comp_ID']
 
                     seq_key = (auth_seq_id, comp_id)

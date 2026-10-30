@@ -1,0 +1,128 @@
+data_FIXTURE_SHIFTS
+
+#############################################
+#  Molecular system (assembly) description  #
+#############################################
+
+save_assembly
+   _Assembly.Sf_category   assembly
+   _Assembly.Sf_framecode  assembly
+   _Assembly.Entry_ID      UNNAMED
+   _Assembly.ID            1
+   _Assembly.Name          synthetic_AG
+
+   loop_
+      _Entity_assembly.ID
+      _Entity_assembly.Entity_assembly_name
+      _Entity_assembly.Entity_ID
+      _Entity_assembly.Entity_label
+      _Entity_assembly.Asym_ID
+      _Entity_assembly.PDB_chain_ID
+      _Entity_assembly.Entry_ID
+      _Entity_assembly.Assembly_ID
+
+     1   synthetic_AG   1   $entity_1   A   A   UNNAMED   1   
+
+   stop_
+
+save_
+
+    ####################################
+    #  Biological polymers and ligands #
+    ####################################
+
+save_entity_1
+   _Entity.Sf_category                  entity
+   _Entity.Sf_framecode                 entity_1
+   _Entity.Entry_ID                     UNNAMED
+   _Entity.ID                           1
+   _Entity.Name                         synthetic_AG
+   _Entity.Type                         polymer
+   _Entity.Polymer_type                 polypeptide(L)
+   _Entity.Polymer_seq_one_letter_code  AG
+
+   loop_
+      _Entity_comp_index.ID
+      _Entity_comp_index.Auth_seq_ID
+      _Entity_comp_index.Comp_ID
+      _Entity_comp_index.Entry_ID
+      _Entity_comp_index.Entity_ID
+
+     1   1   ALA   UNNAMED   1   
+     2   2   GLY   UNNAMED   1   
+
+   stop_
+
+save_
+
+     ###################################
+     #  Assigned chemical shift lists  #
+     ###################################
+
+###################################################################
+#       Chemical Shift Ambiguity Index Value Definitions          #
+#                                                                 #
+# The values other than 1 are used for those atoms with different #
+# chemical shifts that cannot be assigned to stereospecific atoms #
+# or to specific residues or chains.                              #
+#                                                                 #
+#   Index Value            Definition                             #
+#                                                                 #
+#      1             Unique (including isolated methyl protons,   #
+#                         geminal atoms, and geminal methyl       #
+#                         groups with identical chemical shifts)  #
+#                         (e.g. ILE HD11, HD12, HD13 protons)     #
+#      2             Ambiguity of geminal atoms or geminal methyl #
+#                         proton groups (e.g. ASP HB2 and HB3     #
+#                         protons, LEU CD1 and CD2 carbons, or    #
+#                         LEU HD11, HD12, HD13 and HD21, HD22,    #
+#                         HD23 methyl protons)                    #
+#      3             Aromatic atoms on opposite sides of          #
+#                         symmetrical rings (e.g. TYR HE1 and HE2 #
+#                         protons)                                #
+#      4             Intraresidue ambiguities (e.g. LYS HG and    #
+#                         HD protons or TRP HZ2 and HZ3 protons)  #
+#      5             Interresidue ambiguities (LYS 12 vs. LYS 27) #
+#      6             Intermolecular ambiguities (e.g. ASP 31 CA   #
+#                         in monomer 1 and ASP 31 CA in monomer 2 #
+#                         of an asymmetrical homodimer, duplex    #
+#                         DNA assignments, or other assignments   #
+#                         that may apply to atoms in one or more  #
+#                         molecule in the molecular assembly)     #
+#      9             Ambiguous, specific ambiguity not defined    #
+#                                                                 #
+###################################################################
+
+save_assigned_chemical_shifts
+   _Assigned_chem_shift_list.Sf_category   assigned_chemical_shifts
+   _Assigned_chem_shift_list.Sf_framecode  assigned_chemical_shifts
+   _Assigned_chem_shift_list.Entry_ID      UNNAMED
+   _Assigned_chem_shift_list.ID            1
+
+   loop_
+      _Atom_chem_shift.ID
+      _Atom_chem_shift.Entity_assembly_ID
+      _Atom_chem_shift.Entity_ID
+      _Atom_chem_shift.Comp_index_ID
+      _Atom_chem_shift.Seq_ID
+      _Atom_chem_shift.Comp_ID
+      _Atom_chem_shift.Atom_ID
+      _Atom_chem_shift.Atom_type
+      _Atom_chem_shift.Atom_isotope_number
+      _Atom_chem_shift.Val
+      _Atom_chem_shift.Val_err
+      _Atom_chem_shift.Ambiguity_code
+      _Atom_chem_shift.Ambiguity_set_ID
+      _Atom_chem_shift.Entry_ID
+      _Atom_chem_shift.Assigned_chem_shift_list_ID
+
+     1   1   1   1   1   ALA   HA    H   1   4.210   0.020   1   .   UNNAMED   1   
+     2   1   1   1   1   ALA   HB1   H   1   1.390   .       1   .   UNNAMED   1   
+     3   1   1   1   1   ALA   HB2   H   1   1.390   .       1   .   UNNAMED   1   
+     4   1   1   1   1   ALA   HB3   H   1   1.390   .       1   .   UNNAMED   1   
+     5   1   1   2   2   GLY   HA2   H   1   3.850   0.020   1   .   UNNAMED   1   
+     6   1   1   2   2   GLY   HA3   H   1   3.920   0.020   1   .   UNNAMED   1   
+
+   stop_
+
+save_

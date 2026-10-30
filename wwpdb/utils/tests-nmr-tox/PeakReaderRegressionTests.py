@@ -26,6 +26,7 @@ import pynmrstar
 # PairwiseAlign is exported by the compiled alignment extension, invisible to static inference.
 from wwpdb.utils.align.alignlib import PairwiseAlign  # pylint: disable=no-name-in-module
 from wwpdb.utils.nmr.NmrDpUtility import NmrDpUtility
+from wwpdb.utils.nmr.NmrVrptUtility import NmrVrptUtility
 from wwpdb.utils.nmr.ann.BmrbAnnTasks import annotate_assembly_experimental_data
 from wwpdb.utils.nmr.nef.NefTranslator import NefTranslator
 from wwpdb.utils.nmr.pk.BasePKParserListener import BasePKParserListener
@@ -33,6 +34,51 @@ from wwpdb.utils.nmr.pk.XeasyPKReader import XeasyPKReader
 
 
 class PeakReaderRegressionTests(unittest.TestCase):
+
+    def test_shift_only_deposit_does_not_invent_metadata_references(self):
+        source = Path(__file__).resolve().parent / 'data/explicit-shifts.str'
+        with TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            utility = NmrDpUtility()
+            utility.setWorkspace(str(root / 'work'), str(root / 'cache'))
+            utility.setSource(str(source))
+            utility.setLog(str(root / 'report.json'))
+            utility.setDestination(str(root / 'result.str'))
+            utility.addInput(name='bmrb_only', value=True, type='param')
+            utility.addOutput(name='entry_id', value='SHIFT_CONTROL', type='param')
+            utility.addOutput(name='insert_entry_id_to_loops', value=True, type='param')
+            self.assertTrue(utility.op('nmr-str2str-deposit'), (root / 'report.json').read_text(encoding='utf-8'))
+            result = pynmrstar.Entry.from_file(str(root / 'result.str'))
+            shifts = result.get_saveframes_by_category('assigned_chemical_shifts')[0]
+            self.assertEqual(len(result.get_loops_by_category('Atom_chem_shift')[0].data), 6)
+            self.assertFalse(result.get_saveframes_by_category('sample_conditions'))
+            self.assertFalse(result.get_saveframes_by_category('chem_shift_reference'))
+            for tag in ('Sample_condition_list_ID', 'Chem_shift_reference_ID'):
+                self.assertTrue(all(value in (None, '.', '?') for value in shifts.get_tag(tag)))
+
+    def test_nef_molecular_table_without_redundant_sequence_column(self):
+        for optional in ({}, {'Seq_ID': '.'}, {'Seq_ID': '12'}):
+            with self.subTest(optional=optional):
+                utility = NmrVrptUtility(verbose=False, log=io.StringIO())
+                reader = Mock()
+                reader.getDataBlockNameList.return_value = ['entry']
+                reader.hasCategory.side_effect = lambda category, _block: category == 'Chem_comp_assembly'
+                reader.getDictList.return_value = [dict(Entity_assembly_ID='1', Comp_index_ID='1',
+                                                        Comp_ID='ALA', Auth_seq_ID='12', **optional)]
+                component = Mock()
+                component.updateChemCompDict.return_value = False
+                # Exercise the real extraction method with a bounded table reader.
+                # Pylint cannot resolve mangled private fields on this external class.
+                # pylint: disable=protected-access
+                # __rR and __ccU are declared slots; Pylint misses their mangled spelling.
+                # pylint: disable-next=assigning-non-slot
+                utility._NmrVrptUtility__rR = reader
+                # pylint: disable-next=assigning-non-slot
+                utility._NmrVrptUtility__ccU = component
+                self.assertTrue(utility._NmrVrptUtility__extractEntityInstancesFromNmr())
+                key = '12' if optional.get('Seq_ID') == '12' else '1'
+                self.assertIn((key, 'ALA'), utility._NmrVrptUtility__entityInstance['1'])
+                # pylint: enable=protected-access
 
     def test_empty_required_shift_list_is_rejected_before_workflow(self):
         utility = NmrDpUtility()

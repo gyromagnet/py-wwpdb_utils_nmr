@@ -18,7 +18,7 @@ chemical-shift-statistics or dictionary updaters. Test-tool versions are pinned
 in `qualification-requirements.txt`. The image must already exist locally; this
 is not a public, independently downloadable release build.
 
-The active qualification image is `bmrb-extract/utils-nmr:qualification-20261030-v9`.
+The active qualification image is `bmrb-extract/utils-nmr:qualification-20261030-v10`.
 The v8 image is retained for historical evidence. `WWPDB_NMR_QUALIFICATION_IMAGE`
 can select an explicit existing image. `just activate` promotes an already tested
 image to `local-fork` after source/admission checks; `build-docker` builds then
@@ -131,3 +131,45 @@ or establish hosted or scientific equivalence.
 The source ledger, recovery bundle, generation/build logs and full test output
 are retained privately under `bmrb-upstream-review-20261030/` beside the checkouts.
 The prior v8 image and historical evidence remain intact.
+
+
+## Explicit shift-core qualification (v10)
+
+The v10 image is
+`sha256:99801e53d00e031de908a3fbb427ea25563be170f8cfb55b941939554255a6dd`.
+It repairs two additional defects exposed by independent shift-only controls:
+
+- Annotation generated `Sample_condition_list_ID=1` and
+  `Chem_shift_reference_ID=1` without corresponding frames. Missing metadata
+  now remains missing instead of creating dangling foreign keys.
+- Validation of a NEF-derived molecular table accessed absent
+  `Chem_comp_assembly.Seq_ID`. When that redundant column is absent or missing,
+  extraction now uses canonical `Comp_index_ID`; explicit Seq_ID behavior is
+  retained. A reader-level regression exercises missing, null and present IDs.
+
+The full suite passed **135 tests with no failures or skips** in 239.523 seconds.
+`just fix` passes, including ten peak/workflow regressions, both schema tests,
+focused Pylint, admission of all 43 accelerators, and native/Python grammar
+regressions. This retains the existing Linux amd64 / Python 3.14 scope.
+
+For this Python-only change, `just qualification-python-build` verifies the
+exact v9 base image ID, compares every native C/C++ source/header byte before
+reusing its compiled accelerators, overlays the complete current NMR package,
+and preserves science resources. A native-source difference stops that build;
+use the full `qualification-build` with a new tag when changing native code.
+`just activate` promotes a tested image only after source/admission checks.
+
+The evaluation repository's `analysis/shift-core-v1-qualified/` records two
+separately scoped controls, each run twice on this exact image. Both have native
+OK, zero warnings/errors, no internal diagnostics and byte-identical repeated
+outputs. The independent explicit-shifts-v1 profile verifies all admitted
+observations (six STAR, three NEF), identifiers, relationships, uncertainties,
+precision, missingness, metadata and derived counts. Qualification includes
+source/output/checker/reference hashes and actual attempt evidence.
+
+These are constructed interchange-conversion controls. Missing experimental
+sample-condition/calibration metadata remains unknown, and the production
+NMR-STAR archival requiredness audit still reports those two unavailable
+references. They are not full dictionary/deposition certificates, experimental
+producer runs, or replacements for the historical 66-packet campaign. No
+coordinate/restraint baseline has been qualified by this shift-only work.

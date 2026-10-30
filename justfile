@@ -1,6 +1,6 @@
 set shell := ["bash", "-euo", "pipefail", "-c"]
 
-QUALIFICATION_IMAGE := env("WWPDB_NMR_QUALIFICATION_IMAGE", "bmrb-extract/utils-nmr:qualification-20261030-v9")
+QUALIFICATION_IMAGE := env("WWPDB_NMR_QUALIFICATION_IMAGE", "bmrb-extract/utils-nmr:qualification-20261030-v10")
 
 help:
     @just --list
@@ -66,3 +66,8 @@ upstream-python-regressions: image-source-check
 # Promote an already tested image without rebuilding or changing historical tags.
 activate: image-source-check accelerators
     docker tag {{QUALIFICATION_IMAGE}} bmrb-extract/utils-nmr:local-fork
+
+# Reuse v9 accelerators only after proving exact base and native-source identity.
+qualification-python-build:
+    docker image inspect bmrb-extract/utils-nmr:qualification-20261030-v9 | python3 -c 'import json, sys; assert json.load(sys.stdin)[0]["Id"] == "sha256:204fc73559e846349e3cb70175fa29127a77dfb7829ed212b3147463c8c03832", "Unexpected v9 base"'
+    docker build --pull=false --platform linux/amd64 -f Dockerfile.qualification-python -t {{QUALIFICATION_IMAGE}} .

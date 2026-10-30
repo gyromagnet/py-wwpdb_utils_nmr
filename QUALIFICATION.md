@@ -9,13 +9,20 @@ just test
 ```
 
 `Dockerfile.qualification` overlays the entire current NMR package onto the
-previously installed resource image pinned by digest. It does not run CCD,
+previously installed resource image pinned by digest. Its isolated builder rebuilds
+all native parser accelerators against the current generated source;
+`just accelerators` rejects missing, disabled or fingerprint-mismatched binaries.
+The builder installs a compiler and pinned setuptools, which are build-only.
+The runtime does not run CCD,
 chemical-shift-statistics or dictionary updaters. Test-tool versions are pinned
 in `qualification-requirements.txt`. The image must already exist locally; this
 is not a public, independently downloadable release build.
 
-The image is tagged `bmrb-extract/utils-nmr:qualification-20261029-v8` and
-`bmrb-extract/utils-nmr:local-fork`. Before testing, `image-source-check` compares
+The active qualification image is `bmrb-extract/utils-nmr:qualification-20261030-v9`.
+The v8 image is retained for historical evidence. `WWPDB_NMR_QUALIFICATION_IMAGE`
+can select an explicit existing image. `just activate` promotes an already tested
+image to `local-fork` after source/admission checks; `build-docker` builds then
+activates. Historical versioned tags are retained. Before testing, `image-source-check` compares
 all shipped Python files with the source checkout. Obsolete modules are excluded
 as declared in `.dockerignore`. Rebuild after source changes. Tests are mounted
 from this checkout and use the installed image modules and accelerators.
@@ -75,3 +82,52 @@ regressions and focused Pylint. Executable converter source and the pinned v8
 image are unchanged, so the previous 128-test full executable-suite result is
 historical evidence for that image; the two current schema regressions are the
 focused validation of this checkpoint, not a newly claimed full suite run.
+
+
+## Upstream rebase checkpoint
+
+See [UPSTREAM_REVIEW.md](UPSTREAM_REVIEW.md) for all five reviewed branch heads,
+changes affecting packets and the release-line disposition. The selected base
+is `yokochi47/main` at `a450780df1c0c445b5617edfb9ef2ac98af2adb7`,
+which contains the reviewed `wwPDB/bmrb-extract_devel` and `yokochi47/devel`
+heads. All ten local commits replayed with identical patches; the original head
+is preserved under an archive ref and in an external recovery bundle.
+
+The v8 image and historical campaign outputs remain unchanged. New runtime tests
+must use the v9 image and its recorded immutable ID. A rebase or an unchanged
+5.4.4 software version does not establish behavioral or hosted equivalence.
+
+
+### Completed v9 validation
+
+The repaired v9 image has immutable ID
+`sha256:204fc73559e846349e3cb70175fa29127a77dfb7829ed212b3147463c8c03832`.
+All 42 parser accelerators plus `c_listener_util` are compiled and admitted;
+`image-source-check` finds no installed/source Python differences. The complete
+`FULLTEST=1` suite passed **133 tests with no failures or skips** (261.066 seconds).
+The second upstream discovery root still contains zero tests and is not counted
+as additional coverage. `just fix` passes flake8, peak/workflow and schema
+regressions, focused Pylint, accelerator admission, and native/Python grammar
+controls. The same four grammar tests also pass with acceleration explicitly
+disabled; ordinary pure-Python installations retain their supported test path.
+
+A fresh selected packet snapshot at evaluation
+`analysis/qualification-20261030-upstream-v9/` executed ten workflows on v9:
+three native OK, five warnings and two expected negative errors. All ten packet
+manifests match the prior v8 campaign byte-for-byte; no native status or error
+count changed, and there were no runtime or report-analysis failures. All nine
+separately supplied shift inputs pass the bounded 13-field accounting profile.
+The two intentional negative errors make the packet runner exit nonzero as
+expected; they are not silently counted as accepted positive depositions.
+
+The matched 2MTX source bundle also completed on v9 with zero native errors and
+eight visible phase-warning occurrences (four underlying rare assignments).
+Its bounded inventory still retains all 134 shifts and 322 coordinate atoms.
+The strict expanded-source shift profile remains inconclusive, including the
+24 grouped author-name normalizations. Full restraint/physical qualification
+remains open. These selected checks do not replace a fresh full corpus campaign
+or establish hosted or scientific equivalence.
+
+The source ledger, recovery bundle, generation/build logs and full test output
+are retained privately under `bmrb-upstream-review-20261030/` beside the checkouts.
+The prior v8 image and historical evidence remain intact.

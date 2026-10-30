@@ -33,7 +33,7 @@ FULLTEST=1 python -m unittest discover -v -s wwpdb/utils/tests-nmr-tox -p "*Test
 python -m unittest discover -v -s wwpdb/utils/tests-nmr-tox -p "NmrDpUtilityTests.py" -k <test_name>
 ```
 
-- **`FULLTEST=1` matters.** The suite now has 128 tests. Heavy workflow tests
+- **`FULLTEST=1` matters.** The suite now has 133 tests. Heavy workflow tests
   are skipped without it. The local qualification harness sets it automatically
   and runs all tests without the FULLTEST-dependent skips. Tox may additionally skip the three optional
   `c_listener_util` tests when that accelerator is not built. See

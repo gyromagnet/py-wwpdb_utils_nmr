@@ -1,4 +1,4 @@
-# Generated from CnsMRParser.g4 by ANTLR 4.13.0
+# Generated from CnsMRParser.g4 by ANTLR 4.13.2
 # encoding: utf-8
 from antlr4 import *
 from io import StringIO
@@ -259,7 +259,7 @@ def serializedATN():
         1,0,0,0,321,322,1,0,0,0,322,323,1,0,0,0,323,456,5,190,0,0,324,456,
         3,28,14,0,325,456,3,150,75,0,326,456,3,120,60,0,327,328,5,6,0,0,
         328,329,3,122,61,0,329,330,3,116,58,0,330,456,1,0,0,0,331,332,5,
-        7,0,0,332,333,5,184,0,0,333,456,5,180,0,0,334,335,5,8,0,0,335,336,
+        7,0,0,332,333,5,181,0,0,333,456,5,180,0,0,334,335,5,8,0,0,335,336,
         3,122,61,0,336,337,3,116,58,0,337,456,1,0,0,0,338,340,5,9,0,0,339,
         341,5,164,0,0,340,339,1,0,0,0,340,341,1,0,0,0,341,342,1,0,0,0,342,
         456,3,116,58,0,343,344,5,11,0,0,344,456,3,122,61,0,345,347,5,12,
@@ -632,9 +632,9 @@ def serializedATN():
         1,0,0,0,1384,1382,1,0,0,0,1384,1385,1,0,0,0,1385,111,1,0,0,0,1386,
         1384,1,0,0,0,1387,1388,7,5,0,0,1388,113,1,0,0,0,1389,1390,7,6,0,
         0,1390,115,1,0,0,0,1391,1392,7,5,0,0,1392,117,1,0,0,0,1393,1394,
-        7,6,0,0,1394,119,1,0,0,0,1395,1397,5,10,0,0,1396,1398,5,181,0,0,
+        7,6,0,0,1394,119,1,0,0,0,1395,1397,5,10,0,0,1396,1398,5,183,0,0,
         1397,1396,1,0,0,0,1397,1398,1,0,0,0,1398,1399,1,0,0,0,1399,1400,
-        5,182,0,0,1400,121,1,0,0,0,1401,1402,7,7,0,0,1402,123,1,0,0,0,1403,
+        5,184,0,0,1400,121,1,0,0,0,1401,1402,7,7,0,0,1402,123,1,0,0,0,1403,
         1414,5,91,0,0,1404,1412,5,192,0,0,1405,1407,5,195,0,0,1406,1405,
         1,0,0,0,1407,1410,1,0,0,0,1408,1406,1,0,0,0,1408,1409,1,0,0,0,1409,
         1413,1,0,0,0,1410,1408,1,0,0,0,1411,1413,5,196,0,0,1412,1408,1,0,
@@ -928,23 +928,23 @@ class CnsMRParser ( Parser ):
                       "Gt_op", "Leq_op", "Geq_op", "Neq_op", "Symbol_name", 
                       "SPACE", "ENCLOSE_COMMENT", "SECTION_COMMENT", "LINE_COMMENT", 
                       "SET_VARIABLE", "Abs", "Attr_properties", "Comparison_ops", 
-                      "SPACE_AP", "Averaging_methods", "Equ_op_CL", "Class_name", 
-                      "SPACE_CL", "Class_name_AM", "SPACE_AM", "Equ_op_PT", 
-                      "Potential_types", "Class_name_PT", "SPACE_PT", "Noe_analysis", 
-                      "SPACE_NA", "Exclude", "Include", "End_FL", "Class_name_FL", 
-                      "Any_class", "SPACE_FL", "R_paren_VE", "Equ_op_VE", 
-                      "Add_op_VE", "Sub_op_VE", "Mul_op_VE", "Div_op_VE", 
-                      "Exp_op_VE", "Comma_VE", "Integer_VE", "Real_VE", 
-                      "Atom_properties_VE", "Abs_VE", "Acos_VE", "Asin_VE", 
-                      "Cos_VE", "Decode_VE", "Encode_VE", "Exp_VE", "Gauss_VE", 
-                      "Heavy_VE", "Int_VE", "Log10_VE", "Log_VE", "Max_VE", 
-                      "Maxw_VE", "Min_VE", "Mod_VE", "Norm_VE", "Random_VE", 
-                      "Sign_VE", "Sin_VE", "Sqrt_VE", "Tan_VE", "Symbol_name_VE", 
-                      "Simple_name_VE", "Double_quote_string_VE", "SPACE_VE", 
-                      "L_paren_VF", "SPACE_VF", "L_paren_VS", "R_paren_VS", 
-                      "Average_VS", "Element_VS", "Max_VS", "Min_VS", "Norm_VS", 
-                      "Rms_VS", "Sum_VS", "Atom_properties_VS", "SPACE_VS", 
-                      "L_paren_CF", "R_paren_CF", "In_CF", "Integer_CF", 
+                      "SPACE_AP", "Averaging_methods", "Class_name_AM", 
+                      "SPACE_AM", "Equ_op_CL", "Class_name", "SPACE_CL", 
+                      "Equ_op_PT", "Potential_types", "Class_name_PT", "SPACE_PT", 
+                      "Noe_analysis", "SPACE_NA", "Exclude", "Include", 
+                      "End_FL", "Class_name_FL", "Any_class", "SPACE_FL", 
+                      "R_paren_VE", "Equ_op_VE", "Add_op_VE", "Sub_op_VE", 
+                      "Mul_op_VE", "Div_op_VE", "Exp_op_VE", "Comma_VE", 
+                      "Integer_VE", "Real_VE", "Atom_properties_VE", "Abs_VE", 
+                      "Acos_VE", "Asin_VE", "Cos_VE", "Decode_VE", "Encode_VE", 
+                      "Exp_VE", "Gauss_VE", "Heavy_VE", "Int_VE", "Log10_VE", 
+                      "Log_VE", "Max_VE", "Maxw_VE", "Min_VE", "Mod_VE", 
+                      "Norm_VE", "Random_VE", "Sign_VE", "Sin_VE", "Sqrt_VE", 
+                      "Tan_VE", "Symbol_name_VE", "Simple_name_VE", "Double_quote_string_VE", 
+                      "SPACE_VE", "L_paren_VF", "SPACE_VF", "L_paren_VS", 
+                      "R_paren_VS", "Average_VS", "Element_VS", "Max_VS", 
+                      "Min_VS", "Norm_VS", "Rms_VS", "Sum_VS", "Atom_properties_VS", 
+                      "SPACE_VS", "L_paren_CF", "R_paren_CF", "In_CF", "Integer_CF", 
                       "Real_CF", "Symbol_name_CF", "Simple_name_CF", "SPACE_CF", 
                       "COMMENT_CF", "Simple_name_LL", "SPACE_LL" ]
 
@@ -1238,11 +1238,11 @@ class CnsMRParser ( Parser ):
     Comparison_ops=178
     SPACE_AP=179
     Averaging_methods=180
-    Equ_op_CL=181
-    Class_name=182
-    SPACE_CL=183
-    Class_name_AM=184
-    SPACE_AM=185
+    Class_name_AM=181
+    SPACE_AM=182
+    Equ_op_CL=183
+    Class_name=184
+    SPACE_CL=185
     Equ_op_PT=186
     Potential_types=187
     Class_name_PT=188
@@ -1319,7 +1319,7 @@ class CnsMRParser ( Parser ):
 
     def __init__(self, input:TokenStream, output:TextIO = sys.stdout):
         super().__init__(input, output)
-        self.checkVersion("4.13.0")
+        self.checkVersion("4.13.2")
         self._interp = ParserATNSimulator(self, self.atn, self.decisionsToDFA, self.sharedContextCache)
         self._predicates = None
 
@@ -8808,7 +8808,7 @@ class CnsMRParser ( Parser ):
             self.state = 1397
             self._errHandler.sync(self)
             _la = self._input.LA(1)
-            if _la==181:
+            if _la==183:
                 self.state = 1396
                 self.match(CnsMRParser.Equ_op_CL)
 

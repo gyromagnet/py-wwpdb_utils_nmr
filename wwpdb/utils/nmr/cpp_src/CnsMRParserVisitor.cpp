@@ -1,5 +1,5 @@
 
-// Generated from /data/git/py-wwpdb_utils_nmr/wwpdb/utils/tests-nmr/antlr-grammars-v4.10/CnsMRParser.g4 by ANTLR 4.13.2
+// Generated from CnsMRParser.g4 by ANTLR 4.13.2
 
 
 #include "CnsMRParserVisitor.h"

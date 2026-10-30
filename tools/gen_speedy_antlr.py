@@ -386,10 +386,10 @@ def runAntlrCpp(spec: GrammarSpec) -> None:
                '-v', ANTLR_VERSION,
                '-Dlanguage=Cpp', '-visitor', '-no-listener',
                '-o', CPP_SRC_DIR,
-               os.path.join(GRAMMAR_DIR, spec.lexerName + '.g4'),
-               os.path.join(GRAMMAR_DIR, spec.parserName + '.g4')]
+               spec.lexerName + '.g4', spec.parserName + '.g4']
 
-    subprocess.run(command, check=True)
+    # Basenames keep generated headers independent of the checkout's absolute path.
+    subprocess.run(command, cwd=GRAMMAR_DIR, check=True)
 
 
 def applyPatches(path: str, patches: list, substitutions: dict) -> None:

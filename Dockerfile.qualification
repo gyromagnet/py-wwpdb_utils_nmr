@@ -1,8 +1,28 @@
 # Freeze existing converter science resources; never run resource updaters here.
 ARG BASE_IMAGE=bmrb-extract/utils-nmr@sha256:ae30314a2cdb7e1cb59843d362a2ba42d0b5fd413019ddefaa13c4b9135f9be2
+FROM ${BASE_IMAGE} AS accelerator_builder
+USER root
+RUN apt-get update && apt-get install -y --no-install-recommends build-essential \
+    && rm -rf /var/lib/apt/lists/*
+# Match the installed qualification interpreter; setuptools is build-only.
+RUN python -m pip install --no-cache-dir setuptools==84.2.1
+COPY setup.py /opt/py-wwpdb_utils_nmr/setup.py
+COPY tools/build_qualification_accelerators.py /opt/py-wwpdb_utils_nmr/tools/build_qualification_accelerators.py
+COPY wwpdb/utils/nmr /opt/py-wwpdb_utils_nmr/wwpdb/utils/nmr
+WORKDIR /opt/py-wwpdb_utils_nmr
+RUN CFLAGS="-fno-strict-overflow -Wsign-compare -DNDEBUG -O3 -g0" CXXFLAGS="-fno-strict-overflow -Wsign-compare -DNDEBUG -O3 -g0" WWPDB_NMR_BUILD_SPEEDY_ANTLR=1 WWPDB_NMR_BUILD_C_ACCEL=1 \
+    python tools/build_qualification_accelerators.py build_clib build_ext --inplace -j 2 \
+    && mkdir /accelerators \
+    && find wwpdb/utils/nmr -type f \( -name 'sa_*_cpp_parser*.so' -o -name 'c_listener_util*.so' \) \
+       -exec strip --strip-unneeded {} + \
+    && find wwpdb/utils/nmr -type f \( -name 'sa_*_cpp_parser*.so' -o -name 'c_listener_util*.so' \) \
+       -exec cp --parents {} /accelerators/ \; \
+    && rm -rf build
+
 FROM ${BASE_IMAGE}
 USER root
 COPY qualification-requirements.txt /tmp/qualification-requirements.txt
 RUN python -m pip install --no-cache-dir -r /tmp/qualification-requirements.txt
 COPY --chown=appuser:appuser wwpdb/utils/nmr /opt/py-wwpdb_utils_nmr/wwpdb/utils/nmr
+COPY --from=accelerator_builder --chown=appuser:appuser /accelerators/ /opt/py-wwpdb_utils_nmr/
 USER appuser

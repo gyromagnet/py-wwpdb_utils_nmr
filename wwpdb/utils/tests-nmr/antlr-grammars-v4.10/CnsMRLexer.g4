@@ -453,6 +453,10 @@ mode AVER_MODE; // Inside of Averaging tag
 
 Averaging_methods:	('R-6' | 'R-3' | 'SUM' | 'CENT' 'E'? 'R'?) -> popMode;
 
+Class_name_AM:		SIMPLE_NAME | '*';
+
+SPACE_AM:		[ \t\r\n]+ -> skip;
+
 mode CLAS_MODE; // Inside of Classification tag
 
 Equ_op_CL:		'=';
@@ -460,10 +464,6 @@ Equ_op_CL:		'=';
 Class_name:	(SIMPLE_NAME | '*') -> popMode;
 
 SPACE_CL:		[ \t\r\n]+ -> skip;
-
-Class_name_AM:		SIMPLE_NAME | '*';
-
-SPACE_AM:		[ \t\r\n]+ -> skip;
 
 mode POTE_MODE; // Inside of Potential tag
 

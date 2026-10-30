@@ -1,5 +1,5 @@
 
-// Generated from /data/git/py-wwpdb_utils_nmr/wwpdb/utils/tests-nmr/antlr-grammars-v4.10/CnsMRLexer.g4 by ANTLR 4.13.2
+// Generated from CnsMRLexer.g4 by ANTLR 4.13.2
 
 #pragma once
 
@@ -47,8 +47,8 @@ public:
     Neq_op = 169, Symbol_name = 170, SPACE = 171, ENCLOSE_COMMENT = 172, 
     SECTION_COMMENT = 173, LINE_COMMENT = 174, SET_VARIABLE = 175, Abs = 176, 
     Attr_properties = 177, Comparison_ops = 178, SPACE_AP = 179, Averaging_methods = 180, 
-    Equ_op_CL = 181, Class_name = 182, SPACE_CL = 183, Class_name_AM = 184, 
-    SPACE_AM = 185, Equ_op_PT = 186, Potential_types = 187, Class_name_PT = 188, 
+    Class_name_AM = 181, SPACE_AM = 182, Equ_op_CL = 183, Class_name = 184, 
+    SPACE_CL = 185, Equ_op_PT = 186, Potential_types = 187, Class_name_PT = 188, 
     SPACE_PT = 189, Noe_analysis = 190, SPACE_NA = 191, Exclude = 192, Include = 193, 
     End_FL = 194, Class_name_FL = 195, Any_class = 196, SPACE_FL = 197, 
     R_paren_VE = 198, Equ_op_VE = 199, Add_op_VE = 200, Sub_op_VE = 201, 

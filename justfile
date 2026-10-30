@@ -1,6 +1,6 @@
 set shell := ["bash", "-euo", "pipefail", "-c"]
 
-QUALIFICATION_IMAGE := env("WWPDB_NMR_QUALIFICATION_IMAGE", "bmrb-extract/utils-nmr:qualification-20261030-v10")
+QUALIFICATION_IMAGE := env("WWPDB_NMR_QUALIFICATION_IMAGE", "bmrb-extract/utils-nmr:qualification-20261030-v16")
 
 help:
     @just --list

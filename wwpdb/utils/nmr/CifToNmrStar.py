@@ -25,6 +25,7 @@ __license__ = "Apache License 2.0"
 __version__ = "1.0.3"
 
 import collections
+import copy
 import hashlib
 import json
 import logging
@@ -946,13 +947,23 @@ class CifToNmrStar:
         try:
             strData.frame_list.sort(key=sf_key)
 
+            # PyNMRSTAR hashes unknown tags when sorting, so extension/provenance
+            # tag order otherwise changes between Python processes. Extend only a
+            # local schema copy, keeping known dictionary order and stable lexical
+            # ordering for unknowns. Never mutate the shared dictionary schema.
+            schema = copy.copy(self.pynmrstar_schema)
+            observed_tags = {f'{sf.tag_prefix}.{tag[0]}' for sf in strData.frame_list for tag in sf.tags}
+            observed_tags.update(tag for sf in strData.frame_list for lp in sf for tag in lp.get_tag_names())
+            schema.schema_order = list(self.pynmrstar_schema.schema_order) + sorted(
+                observed_tags - set(self.pynmrstar_schema.schema_order))
+
             for sf in strData.frame_list:
-                sf.sort_tags(self.pynmrstar_schema)
+                sf.sort_tags(schema)
                 if len(sf.loops) > 1:
                     sf.loops.sort(key=lp_key)
                 # Iterate through the loops
                 for lp in sf:
-                    lp.sort_tags(self.pynmrstar_schema)
+                    lp.sort_tags(schema)
 
         except Exception as e:  # pylint: disable=broad-exception-caught
             self.__log.write(f"+{self.__class_name__}.normalize() ++ Error  - {str(e)}\n")

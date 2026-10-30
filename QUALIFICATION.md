@@ -18,7 +18,7 @@ chemical-shift-statistics or dictionary updaters. Test-tool versions are pinned
 in `qualification-requirements.txt`. The image must already exist locally; this
 is not a public, independently downloadable release build.
 
-The active qualification image is `bmrb-extract/utils-nmr:qualification-20261030-v10`.
+The active qualification image is `bmrb-extract/utils-nmr:qualification-20261030-v16`.
 The v8 image is retained for historical evidence. `WWPDB_NMR_QUALIFICATION_IMAGE`
 can select an explicit existing image. `just activate` promotes an already tested
 image to `local-fork` after source/admission checks; `build-docker` builds then
@@ -173,3 +173,37 @@ NMR-STAR archival requiredness audit still reports those two unavailable
 references. They are not full dictionary/deposition certificates, experimental
 producer runs, or replacements for the historical 66-packet campaign. No
 coordinate/restraint baseline has been qualified by this shift-only work.
+
+## Matched direct-atom CNS baseline (v16)
+
+The Python-only successor retains the v9 native-source/fingerprint admission
+contract. It repairs author atom-label loss for unchanged, unexpanded chemical
+shift observations during coordinate/chain reconstruction, retaining supplied
+Original_PDB naming provenance when it was otherwise absent. Annotation and real
+atom remapping keep their existing rules. A real 2L9R merge regression covers
+three grouped methyl assignments with absent author chain IDs.
+
+It also fixes a reproducibility defect in normalization: PyNMRSTAR assigns unknown
+tags a Python hash order. A local shallow schema copy appends the observed unknown
+tags in lexical order; scalar and loop columns then sort deterministically without
+changing the shared dictionary schema or separating loop values from their tags.
+A regression checks both reversed scalar/loop input ordering and shared-schema
+immutability.
+
+Two independent local conversions of the public 2L9R/BMRB 17484 direct hydrogen-bond
+subset are retained in the evaluation repository under
+`analysis/2l9r-cns-hbond-v16/`. All 806 supplied shifts, 38 direct pairs/targets/bounds/
+weights and 23,780 atom_site records across 20 models pass independent preservation.
+Three warning records per phase remain (missing NOE data in the excerpt, an unusual
+LEU19 shift and a LEU64 rotamer inference). These are scoped conversion controls,
+not warning-free or full-deposition certificates. Complete parent force semantics
+and the remaining restraint categories are outside this profile.
+
+The final v16 image ID is
+`sha256:37ab33fc09be9b55d7c5bffa698e6132439aaf67e3c91dc9404c07d2adc035eb`.
+`just fix` passes and admits all 43 compiled accelerators. The full `just test`
+run passes **137 tests, no failures or skips**, in 249.003 seconds. Both matched
+native attempts are byte-identical for STAR and coordinates, with every recorded
+artifact hash checked. Earlier v11–v15 probes are exploratory history; the v15
+full run was stopped after the ordering repair superseded it. Only the completed
+v16 run supplies this full-suite claim.

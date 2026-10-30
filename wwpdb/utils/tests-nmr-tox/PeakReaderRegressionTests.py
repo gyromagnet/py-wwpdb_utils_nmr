@@ -25,6 +25,7 @@ import pynmrstar
 
 # PairwiseAlign is exported by the compiled alignment extension, invisible to static inference.
 from wwpdb.utils.align.alignlib import PairwiseAlign  # pylint: disable=no-name-in-module
+from wwpdb.utils.nmr.CifToNmrStar import CifToNmrStar
 from wwpdb.utils.nmr.NmrDpUtility import NmrDpUtility
 from wwpdb.utils.nmr.NmrVrptUtility import NmrVrptUtility
 from wwpdb.utils.nmr.ann.BmrbAnnTasks import annotate_assembly_experimental_data
@@ -34,6 +35,74 @@ from wwpdb.utils.nmr.pk.XeasyPKReader import XeasyPKReader
 
 
 class PeakReaderRegressionTests(unittest.TestCase):
+
+    def test_normalization_stably_sorts_unknown_tags_without_mutating_schema(self):
+        converter = CifToNmrStar(log=io.StringIO())
+        original_order = list(converter.pynmrstar_schema.schema_order)
+        results = []
+        for reverse in (False, True):
+            entry = pynmrstar.Entry.from_scratch('test')
+            frame = pynmrstar.Saveframe.from_scratch('entry', '_Entry')
+            frame.add_tag('Sf_category', 'entry_information')
+            tags = [('User_extension_z', 'last'), ('User_extension_a', 'first')]
+            for tag, value in reversed(tags) if reverse else tags:
+                frame.add_tag(tag, value)
+            loop = pynmrstar.Loop.from_scratch('_User_extension')
+            tags = [('z', 'last'), ('a', 'first')]
+            ordered = list(reversed(tags)) if reverse else tags
+            loop.add_tag([tag for tag, _ in ordered])
+            loop.add_data([value for _, value in ordered])
+            frame.add_loop(loop)
+            entry.add_saveframe(frame)
+            converter.normalize_str(entry)
+            self.assertEqual([tag[0] for tag in frame.tags][-2:], ['User_extension_a', 'User_extension_z'])
+            self.assertEqual(loop.tags, ['a', 'z'])
+            self.assertEqual(loop.data, [['first', 'last']])
+            results.append(str(entry))
+        self.assertEqual(results[0], results[1])
+        self.assertEqual(converter.pynmrstar_schema.schema_order, original_order)
+
+    def test_coordinate_merge_retains_grouped_author_atom_labels(self):
+        coordinates = Path(__file__).resolve().parents[1] / 'tests-nmr/mock-data/2l9r.cif'
+        entry = pynmrstar.Entry.from_file(str(coordinates.with_suffix('.str')))
+        for frame in list(entry.frame_list):
+            if frame.category not in ('entry_information', 'assembly', 'assigned_chemical_shifts'):
+                entry.remove_saveframe(frame.name)
+        # Use the existing matched structure and metadata. Remove optional original
+        # naming so this exercises chain reconstruction from canonical identities.
+        loop = entry.get_loops_by_category('Atom_chem_shift')[0]
+        for tag in list(loop.tags):
+            if tag.startswith('Original_PDB_'):
+                loop.remove_tag(tag)
+        atom_col = loop.tags.index('Atom_ID')
+        seq_col = loop.tags.index('Comp_index_ID')
+        auth_col = loop.tags.index('Auth_atom_ID')
+        chain_col = loop.tags.index('Auth_asym_ID')
+        for row in loop.data:
+            row[chain_col] = '.'
+            if row[seq_col] == '14' and row[atom_col] in ('HG21', 'HG22', 'HG23'):
+                row[auth_col] = 'HG21'
+        with TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            source = root / 'shifts.str'
+            entry.write_to_file(str(source))
+            utility = NmrDpUtility()
+            utility.setWorkspace(str(root / 'work'), str(root / 'cache'))
+            utility.addInput(name='chem_shift_file_path_list',
+                             value=[{'file_name': str(source), 'file_type': 'nm-shi'}], type='file_dict_list')
+            utility.addInput(name='coordinate_file_path', value=str(coordinates), type='file')
+            utility.addInput(name='remediation', value=True, type='param')
+            utility.addInput(name='conversion_server', value=True, type='param')
+            utility.addInput(name='nonblk_anomalous_cs', value=True, type='param')
+            utility.setLog(str(root / 'report.json'))
+            utility.setDestination(str(root / 'merged.str'))
+            self.assertTrue(utility.op('nmr-cs-mr-merge'), (root / 'report.json').read_text(encoding='utf-8'))
+            result = pynmrstar.Entry.from_file(str(root / 'merged.str'))
+            rows = result.get_loops_by_category('Atom_chem_shift')[0].get_tag(
+                ['Comp_index_ID', 'Atom_ID', 'Auth_atom_ID', 'Original_PDB_atom_name'])
+            matched = [row for row in rows if row[0] == '14' and row[1] in ('HG21', 'HG22', 'HG23')]
+            self.assertEqual(len(matched), 3)
+            self.assertTrue(all(row[2:] == ['HG21', 'HG21'] for row in matched), matched)
 
     def test_shift_only_deposit_does_not_invent_metadata_references(self):
         source = Path(__file__).resolve().parent / 'data/explicit-shifts.str'

@@ -889,6 +889,8 @@ class NmrDpRemediationCsLoop(NmrDpRemediationBase):
                                                           }
 
             def fill_cs_row(lp, index, _row, prefer_auth_atom_name, coord_atom_site, _seq_key, comp_id, atom_id, src_lp, src_idx):
+                original_index = index
+
                 def peripheral_src_rows():
                     """ Yield rows of src_lp at increasing distance from src_idx, forward then
                         backward, so a scan can inspect the neighbourhood of the current row.
@@ -1508,6 +1510,22 @@ class NmrDpRemediationCsLoop(NmrDpRemediationBase):
                                     _row[CS_ORIG_ATOM] = _row[CS_ATOM_ID][-1] + _row[CS_ATOM_ID][:-1]
                                 else:
                                     _row[CS_ORIG_ATOM] = copy.copy(_row[CS_ATOM_ID])
+
+                # Canonical atom resolution must not erase a supplied author label.
+                # Chain reconstruction and methyl validation may have populated it
+                # with a coordinate name. Restore only unchanged, unexpanded source
+                # observations; annotation and real atom remapping retain their rules.
+                source_row = src_lp.data[_src_idx]
+                if (
+                    not self._reg.annotation_mode and index == original_index and auth_atom_id_col != -1
+                    and source_row[auth_atom_id_col] not in EMPTY_VALUE
+                    and source_row[atom_id_col] == _row[CS_ATOM_ID]
+                    and source_row[seq_id_col] == str(_row[CS_COMP_IDX])
+                    and source_row[comp_id_col] == _row[CS_COMP_ID]
+                ):
+                    _row[CS_AUTH_ATOM] = source_row[auth_atom_id_col]
+                    if not has_orig_seq:
+                        _row[CS_ORIG_ATOM] = source_row[auth_atom_id_col]
 
                 return index, _row, reparse
 
